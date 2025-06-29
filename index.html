@@ -229,6 +229,7 @@
             <option value="MS">Movement Speed (MS)</option>
             <option value="JF">Jump Force (JF)</option>
             <option value="PP">Psychic Power (PP)</option>
+            <option value="TC">Time Coin (TC)</option>
           </select>
         </div>
 
@@ -395,22 +396,18 @@
     return parseFloat(str) || NaN;
   }
 
-  const cooldowns = { FS: 1, BT: 1, PP: 1, MS: 1, JF: 1 };
+  const cooldowns = { FS: 1, BT: 1, PP: 1, MS: 1, JF: 1, TC: 60 };
 
   function formatTime(sec) {
-    const days = Math.floor(sec / 86400);
-    const hours = Math.floor((sec % 86400) / 3600);
-    const minutes = Math.floor((sec % 3600) / 60);
-    const seconds = Math.floor(sec % 60);
-    
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
     const parts = [];
-    if (days) parts.push(`${days} d`);
-    if (hours) parts.push(`${hours} h`);
-    if (minutes) parts.push(`${minutes} m`);
-    parts.push(`${seconds} s`);
-    
+    if (h) parts.push(`${h} h`);
+    if (m) parts.push(`${m} m`);
+    parts.push(`${s} s`);
     return parts.join(' ');
-}
+  }
 
   function show(msg, cls) {
     const r = document.getElementById('result');
