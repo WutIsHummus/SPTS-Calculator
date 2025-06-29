@@ -387,14 +387,14 @@
     suffixes.forEach((s, i) => suffixToMultiplier[s] = 10 ** ((i + 1) * 3));
 
     function toNumber(str) {
-      str = str.trim();
-      for (const suf in suffixToMultiplier) {
-        const m = suffixToMultiplier[suf];
-        const num = parseFloat(str.replace(suf, ''));
-        if (!isNaN(num) && str.endsWith(suf)) return num * m;
-      }
-      return parseFloat(str) || NaN;
+    str = str.trim();
+    for (const suf of suffixes) {          // use the sorted array
+      if (!str.endsWith(suf)) continue;
+      const num = parseFloat(str.slice(0, -suf.length));
+      if (!isNaN(num)) return num * suffixToMultiplier[suf];
     }
+    return parseFloat(str) || NaN;
+  }
 
     const cooldowns = { FS: 0.85, BT: 0.85, PP: 0.85, MS: 0.9, JF: 0.5 };
 
