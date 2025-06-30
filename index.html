@@ -394,15 +394,17 @@
     const cooldowns = { FS: 0.85, BT: 0.85, PP: 0.85, MS: 0.9, JF: 0.5, TC: 60 };
 
     function formatTime(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = Math.floor(sec % 60);
-      const parts = [];
-      if (h) parts.push(`${h} h`);
-      if (m) parts.push(`${m} m`);
-      parts.push(`${s} s`);
-      return parts.join(' ');
-    }
+  const d = Math.floor(sec / 86400);
+  const h = Math.floor((sec % 86400) / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  const parts = [];
+  if (d) parts.push(`${d} d`);
+  if (h) parts.push(`${h} h`);
+  if (m) parts.push(`${m} m`);
+  parts.push(`${s} s`);
+  return parts.join(' ');
+}
 
     function show(msg, cls) {
       const r = document.getElementById('result');
