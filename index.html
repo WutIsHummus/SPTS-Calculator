@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +30,7 @@
       align-items: flex-start;
       gap: 3rem;
       max-width: 1200px;
-      margin: 0 auto;     
+      margin: 0 auto;
     }
 
     main {
@@ -196,7 +197,7 @@
         flex-direction: column;
         gap: 2rem;
       }
-      
+
       .container {
         flex-direction: column;
         align-items: center;
@@ -215,12 +216,13 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <main>
       <div class="calculator-container">
         <h1>SPTS Stat Training Calculator</h1>
-        
+
         <div class="form-group">
           <label for="skill">Skill:</label>
           <select id="skill">
@@ -249,7 +251,7 @@
         </div>
 
         <button id="calc">Calculate</button>
-        
+
         <div id="result" class="result"></div>
       </div>
     </main>
@@ -363,74 +365,70 @@
   </div>
 
   <script>
-  const suffixes = [
-  '', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc', 'Ud', 'Dd',
-  'Td', 'Qad', 'Qid', 'Sxd', 'Spd', 'Ocd', 'Nod', 'Vg', 'UVg', 'DVg', 'TVg',
-  'QaVg', 'QiVg', 'SxVg', 'SpVg', 'OcVg', 'NoVg', 'Tg', 'UTg', 'DTg', 'TTg',
-  'QaTg', 'QiTg', 'SxTg', 'SpTg', 'OcTg', 'NoTg', 'Qag', 'UQag', 'DQag',
-  'TQag', 'QaQag', 'QiQag', 'SxQag', 'SpQag', 'OcQag', 'NoQag', 'Qig', 'UQig',
-  'DQig', 'TQig', 'QaQig', 'QiQig', 'SxQig', 'SpQig', 'OcQig', 'NoQig',
-  'Sxg', 'USxg', 'DSxg', 'TSxg', 'QaSxg', 'QiSxg', 'SxSxg', 'SpSxg',
-  'OcSxg', 'NoSxg', 'Spg', 'USpg', 'DSpg', 'TSpg', 'QaSpg', 'QiSpg', 'SxSpg',
-  'SpSpg', 'OcSpg', 'NoSpg', 'inf', 'inf+', 'inf++', 'inf+++', 'inf++++',
-  'inf+++++', 'inf+VI', 'inf+VII', 'inf+VIII', 'inf+IX', 'inf+X', 'inf+XI',
-  'inf+XII', 'inf+XIII', 'inf+XIV', 'inf+XV', 'inf+XVI', 'inf+XVII',
-  'inf+XVIII', 'inf+XIX', 'inf+XX'
-];
+    const suffixes = [
+      '', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc', 'Ud', 'Dd', 'Td', 'Qad', 'Qid', 'Sxd', 'Spd', 'Ocd', 'Nod',
+      'Vg', 'UVg', 'DVg', 'TVg', 'QaVg', 'QiVg', 'SxVg', 'SpVg', 'OcVg', 'NoVg', 'Tg', 'UTg', 'DTg', 'TTg', 'QaTg', 'QiTg', 'SxTg',
+      'SpTg', 'OcTg', 'NoTg', 'Qag', 'UQag', 'DQag', 'TQag', 'QaQag', 'QiQag', 'SxQag', 'SpQag', 'OcQag', 'NoQag', 'Qig', 'UQig',
+      'DQig', 'TQig', 'QaQig', 'QiQig', 'SxQig', 'SpQig', 'OcQig', 'NoQig', 'Sxg', 'USxg', 'DSxg', 'TSxg', 'QaSxg', 'QiSxg', 'SxSxg',
+      'SpSxg', 'OcSxg', 'NoSxg', 'Spg', 'USpg', 'DSpg', 'TSpg', 'QaSpg', 'QiSpg', 'SxSpg', 'SpSpg', 'OcSpg', 'NoSpg', 'inf', 'inf+',
+      'inf++', 'inf+++', 'inf++++', 'inf+++++', 'inf+VI', 'inf+VII', 'inf+VIII', 'inf+IX', 'inf+X', 'inf+XI', 'inf+XII', 'inf+XIII',
+      'inf+XIV', 'inf+XV', 'inf+XVI', 'inf+XVII', 'inf+XVIII', 'inf+XIX', 'inf+XX'
+    ];
 
-  // Build mapping just once
-  const suffixToMultiplier = {};
-  suffixes.forEach((s, i) => {
-    suffixToMultiplier[s] = 10 ** (i * 3);
-  });
+    // Build mapping just once
+    const suffixToMultiplier = {};
+    suffixes.forEach((s, i) => {
+      suffixToMultiplier[s] = 10 ** (i * 3);
+    });
 
-  function toNumber(str) {
-    str = str.trim();
-    for (const suf of suffixes) {
-      if (!str.endsWith(suf)) continue;
-      const num = parseFloat(str.slice(0, -suf.length));
-      if (!isNaN(num)) return num * suffixToMultiplier[suf];
-    }
-    return parseFloat(str) || NaN;
-  }
-
-  const cooldowns = { FS: 0.85, BT: 0.85, PP: 0.85, MS: 0.9, JF: 0.5, TC: 60 };
-
-  function formatTime(sec) {
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = Math.floor(sec % 60);
-    const parts = [];
-    if (h) parts.push(`${h} h`);
-    if (m) parts.push(`${m} m`);
-    parts.push(`${s} s`);
-    return parts.join(' ');
-  }
-
-  function show(msg, cls) {
-    const r = document.getElementById('result');
-    r.textContent = msg;
-    r.className = `result ${cls} show`;
-  }
-
-  function showResult(txt) { show(txt, 'success'); }
-  function showError(txt)  { show(txt, 'error');   }
-
-  document.getElementById('calc').addEventListener('click', () => {
-    const type = document.getElementById('skill').value;
-    const cur  = toNumber(document.getElementById('current').value);
-    const tgt  = toNumber(document.getElementById('target').value);
-    const gain = toNumber(document.getElementById('gain').value);
-
-    if (isNaN(cur) || isNaN(tgt) || isNaN(gain) || tgt <= cur || gain <= 0) {
-      showError('Invalid inputs');
-      return;
+    function toNumber(str) {
+      str = str.trim();
+      for (const suf of [...suffixes].sort((a, b) => b.length - a.length)) {
+        if (!str.endsWith(suf)) continue;
+        const num = parseFloat(str.slice(0, -suf.length));
+        if (!isNaN(num)) return num * suffixToMultiplier[suf];
+      }
+      return parseFloat(str) || NaN;
     }
 
-    const ticks    = Math.ceil((tgt - cur) / gain);
-    const totalSec = ticks * (cooldowns[type] || 0.85);
-    showResult(formatTime(totalSec));
-  });
-</script>
+    const cooldowns = { FS: 0.85, BT: 0.85, PP: 0.85, MS: 0.9, JF: 0.5, TC: 60 };
+
+    function formatTime(sec) {
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = Math.floor(sec % 60);
+      const parts = [];
+      if (h) parts.push(`${h} h`);
+      if (m) parts.push(`${m} m`);
+      parts.push(`${s} s`);
+      return parts.join(' ');
+    }
+
+    function show(msg, cls) {
+      const r = document.getElementById('result');
+      r.textContent = msg;
+      r.className = `result ${cls} show`;
+    }
+
+    function showResult(txt) { show(txt, 'success'); }
+    function showError(txt) { show(txt, 'error'); }
+
+    document.getElementById('calc').addEventListener('click', () => {
+      const type = document.getElementById('skill').value;
+      const cur = toNumber(document.getElementById('current').value);
+      const tgt = toNumber(document.getElementById('target').value);
+      const gain = toNumber(document.getElementById('gain').value);
+
+      if (isNaN(cur) || isNaN(tgt) || isNaN(gain) || tgt <= cur || gain <= 0) {
+        showError('Invalid inputs');
+        return;
+      }
+
+      const ticks = Math.ceil((tgt - cur) / gain);
+      const totalSec = ticks * (cooldowns[type] || 0.85);
+      showResult(formatTime(totalSec));
+    });
+  </script>
 </body>
+
 </html>
